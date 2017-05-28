@@ -1,6 +1,7 @@
 const fs = require('fs')
 const chokidar = require('chokidar');
-let dir = process.argv[2]
+let dir = process.argv[2],
+    arr = ['js', 'css', 'html', 'json', 'node']
 
 let readPromise = (path, code = 'utf8') => {
     return new Promise((resolve, reject) => {
@@ -25,21 +26,22 @@ let writePromise = (file, content = '', code = 'utf8') => {
     })
 }
 let createFiles = (dir) => {
-    let jsFile = writePromise(`${dir}/index.js`)
-    let cssFile = writePromise(`${dir}/index.css`)
-    let jsonFile = writePromise(`${dir}/index.json`)
-    let nodeFile = writePromise(`${dir}/index.node`)
-    return Promise.all([jsFile, cssFile, jsonFile, nodeFile])
+    let tempArr
+    tempArr = arr.map((v) => {
+        let content = ''
+        if (v === 'json') {
+            content = '[]'
+        }
+        return writePromise(`./${dir}/index.${v}`, content)
+    })
+    return Promise.all(tempArr)
 }
 let getFilesContent = (dir) => {
-    let jsFile = readPromise(`./${dir}/index.js`)
-    let cssFile = readPromise(`./${dir}/index.css`)
-    let jsonFile = readPromise(`./${dir}/index.json`)
-    let nodeFile = readPromise(`./${dir}/index.node`)
-    return Promise.all([jsFile, cssFile, jsonFile, nodeFile]).then((data) => {
-        console.log('读取文件成功')
-        resolve(data)
+    let tempArr
+    tempArr = arr.map((v) => {
+        return readPromise(`./${dir}/index.${v}`)
     })
+    return Promise.all(tempArr)
 }
 
 let postData = () => {
@@ -49,7 +51,12 @@ let postData = () => {
 let watchFiles = (dir) => {
     chokidar.watch(dir, {ignored: /(^|[\/\\])\../}).on('all', (event, fileName) => {
         console.log('正在监听文件')
-        getFilesContent(dir)
+        getFilesContent(dir).then((data) => {
+            console.log('读取文件成功')
+            return data
+        }).catch((err) => {
+            console.log(`read files errors:${err}`)
+        })
     })
 } 
 console.log('开启服务成功')
@@ -58,6 +65,8 @@ if (!fs.existsSync(dir)) {
     createFiles(dir).then((err, data) => {
         console.log('创建文件成功')
         watchFiles(dir)
+    }).catch((err) => {
+        console.log(`create files errors:${err}`)
     })
 } else {
     watchFiles(dir)
