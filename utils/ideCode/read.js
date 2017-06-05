@@ -92,7 +92,7 @@ let pulData = (id) => {
     })
 }
 if (temp && temp === 'pull') {
-    console.log('正在拉取星云数据')
+    console.log('正在拉取数据')
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir)
         pulData(id)
@@ -100,6 +100,6 @@ if (temp && temp === 'pull') {
         pulData(id)
     }
 } else {
-    console.log('正在向星云同步')
+    console.log('正在同步')
     watchFiles(dir)
 }
