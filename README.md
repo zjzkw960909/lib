@@ -5,6 +5,9 @@
 >+ 输出一个函数，这个函数接收的有两个参数:table和fields,table是表名，fields是当前table的列名。需要对函数进行实例化，editSql是根据req,page和offset生成对应的增删改查语句。post,put,get,delete是node与mysql交互的函数，接受的参数是(connection, sql, req, res)
 >+ 在modules/model.js调用了这个文件。在node中，直接require model.js文件，使用时输入table名就不用写增删改查语句了。
 
+>##### files
+>+ 作用：代码片段，读取文件内容，重写文件内容，读取文件json，在读取到的基础上改变json并写入。
+
 >##### monitor
 >+ 作用：监控文件夹，保证文件夹中的文件是最新的n个，自动删除旧的文件。
 
